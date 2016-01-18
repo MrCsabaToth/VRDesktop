@@ -21,7 +21,7 @@ public class SessionState implements Parcelable
 {
 	private int instance;
 	private BookmarkBase bookmark;
-	private BitmapDrawable surface;
+	private Bitmap surface;
 	private LibFreeRDP.UIEventListener uiEventListener;
 	
 	public SessionState(Parcel parcel)
@@ -29,8 +29,7 @@ public class SessionState implements Parcelable
 		instance = parcel.readInt();
 		bookmark = parcel.readParcelable(null);
 
-		Bitmap bitmap = parcel.readParcelable(null);
-		surface = new BitmapDrawable(bitmap);
+		surface = parcel.readParcelable(null);
 	}
 	
 	public SessionState(int instance, BookmarkBase bookmark)
@@ -61,11 +60,11 @@ public class SessionState implements Parcelable
 		this.uiEventListener = uiEventListener;
 	}
 
-	public void setSurface(BitmapDrawable surface) {
+	public void setSurface(Bitmap surface) {
 		this.surface = surface;
 	}
 	
-	public BitmapDrawable getSurface() {
+	public Bitmap getSurface() {
 		return surface;
 	}
 
@@ -90,6 +89,6 @@ public class SessionState implements Parcelable
 	public void writeToParcel(Parcel out, int flags) {		
 		out.writeInt(instance);
 		out.writeParcelable(bookmark, flags);
-		out.writeParcelable(surface.getBitmap(), flags);
+		out.writeParcelable(surface, flags);
 	}
 }

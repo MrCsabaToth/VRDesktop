@@ -34,13 +34,12 @@ public class SessionRequestHandlerActivity extends Activity {
 	}
 
 	private void startSessionWithConnectionReference(String refStr) {
-		
 		Bundle bundle = new Bundle();
 		bundle.putString(SessionActivity.PARAM_CONNECTION_REFERENCE, refStr);				
 		Intent sessionIntent = new Intent(this, SessionActivity.class);				
 		sessionIntent.putExtras(bundle);				
 
-		startActivityForResult(sessionIntent, 0);			
+		startActivityForResult(sessionIntent, 0);
 	}
 
 	private void editBookmarkWithConnectionReference(String refStr) {

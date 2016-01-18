@@ -9,8 +9,6 @@
 
 package com.freerdp.freerdpcore.presentation;
 
-import java.util.Collection;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -22,8 +20,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -43,7 +39,7 @@ import com.freerdp.freerdpcore.domain.BookmarkBase;
 import com.freerdp.freerdpcore.domain.ConnectionReference;
 import com.freerdp.freerdpcore.domain.ManualBookmark;
 import com.freerdp.freerdpcore.services.LibFreeRDP;
-import com.freerdp.freerdpcore.utils.ClipboardManagerProxy;
+//import com.freerdp.freerdpcore.utils.ClipboardManagerProxy;
 import com.freerdp.freerdpcore.utils.Mouse;
 
 public class SessionActivity extends ActionBarActivity implements LibFreeRDP.UIEventListener {
@@ -236,8 +232,7 @@ public class SessionActivity extends ActionBarActivity implements LibFreeRDP.UIE
 						}).setCancelable(false).create();
 
 		// build the dialog
-		userCredView = getLayoutInflater().inflate(R.layout.credentials, null,
-				true);
+		userCredView = getLayoutInflater().inflate(R.layout.credentials, null, true);
 		dlgUserCredentials = new AlertDialog.Builder(this)
 				.setView(userCredView)
 				.setTitle(R.string.dlg_title_credentials)

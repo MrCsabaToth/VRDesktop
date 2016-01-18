@@ -15,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.content.Context;
 import android.graphics.*;
-import android.graphics.drawable.BitmapDrawable;
 
 import java.util.*;
 
@@ -26,7 +25,7 @@ public class SessionView extends View
 {
 	private int width;
 	private int height;
-	private BitmapDrawable surface;
+	private Bitmap surface;
 	private Stack<Rect> invalidRegions;
 
 	// helpers for scaling gesture handling

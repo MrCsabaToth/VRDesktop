@@ -1,0 +1,3 @@
+set solib-search-path ./obj/local/armeabi-v7a
+source /home/csaba/android-ndk-r10e/prebuilt/common/gdb/common.setup
+directory /home/csaba/android-ndk-r10e/platforms/android-21/arch-arm/usr/include /home/csaba/GitRepos/FreeRDP/client/Android/FreeRDPCore/jni /home/csaba/android-ndk-r10e/sources/cxx-stl/system

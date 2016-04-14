@@ -7,10 +7,12 @@
 VR Desktop's main goal is to migrate your physical monitors/desktop into VR. With a Cardboard or a more comfortable VR headset you can have as big monitor as you want. Some vendors already prvide such functionality (like Oculus has one), but I want to provide an independent solution which works generally with Android. Your operating system also doesn't matter (explained later).
 
 Tools needed:
+
 1. VR capable Android phone.
 2. Desktop environment with an RDP connection.
 
 Advised toolset:
+
 1. At least 1080p screen resolution Android phone.
 2. Direct USB connection to decrease latency and increase throughput.
 3. VirtualBox VM machine. Purpose of using VirtualBox is two fold: it provides RDP connection out of the box, and with the VM guest additions you can configure a 4K monitor without owning one.

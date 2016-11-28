@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	android:installLocation="auto"
+	package="com.freerdp.freerdpcore"
+	android:versionCode="3"
+	android:versionName="e83f97b" >
+
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <!-- The GVR SDK requires API 19+ and OpenGL ES 2+. -->
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="24" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
+    <!-- Required for vibration feedback when the trigger action is performed. -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Required to read the paired viewer's distortion parameters. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!-- Required to detect viewer insertion. -->
+    <uses-permission android:name="android.permission.NFC"/>
+
+    <!-- Make accelerometer and gyroscope hard requirements for good head tracking. -->
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="true"/>
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="true"/>
+
+    <!-- Indicates use of Android's VR-mode, available only on Android N+. -->
+    <uses-feature android:name="android.software.vr.mode" android:required="false"/>
+    <!-- Indicates use of VR features that are available only on Daydream-ready devices. -->
+    <uses-feature android:name="android.hardware.vr.high_performance" android:required="false"/>
+
+	<supports-screens
+		android:anyDensity="true"
+		android:smallScreens="true"
+		android:normalScreens="true"
+		android:largeScreens="true"
+		android:xlargeScreens="true" />
+
+	<application
+		android:theme="@style/Theme.Main">
+
+		<!-- Activity to create shortcuts -->
+		<activity android:name=".presentation.ShortcutsActivity"
+			android:theme="@style/Theme.Main"
+			android:label="@string/title_create_shortcut">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+	        </activity>
+			
+	        <!-- It is recommended that you use an activity-alias to provide the "CREATE_SHORTCUT" -->
+	        <!-- intent-filter.  This gives you a way to set the text (and optionally the -->
+	        <!-- icon) that will be seen in the launcher's create-shortcut user interface. -->	
+	        <activity-alias android:name=".presentation.CreateShortcuts"
+			android:targetActivity="com.freerdp.freerdpcore.presentation.ShortcutsActivity"
+			android:label="@string/title_create_shortcut">	
+			<!--  This intent-filter allows your shortcuts to be created in the launcher. -->
+			<intent-filter>
+				<action android:name="android.intent.action.CREATE_SHORTCUT" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>	
+		</activity-alias>					
+
+		<activity android:name=".presentation.BookmarkActivity"
+			android:label="@string/title_bookmark_settings"
+			android:theme="@style/Theme.Settings">
+			<intent-filter>
+				<action android:name="freerdp.intent.action.BOOKMARK" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<data android:scheme="preferences"/>
+			</intent-filter>
+		</activity>
+		<activity android:name=".presentation.ApplicationSettingsActivity"
+			android:label="@string/title_application_settings"
+			android:theme="@style/Theme.Settings"
+			android:windowSoftInputMode="stateHidden">
+		</activity>
+		<activity android:name=".presentation.SessionActivity"
+			android:theme="@style/Theme.Main"
+			android:configChanges="orientation|keyboardHidden|screenSize|keyboard"
+			android:windowSoftInputMode="adjustResize">
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />              
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="freerdp" android:host="*" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".presentation.AboutActivity"
+			android:label="@string/title_about"
+			android:theme="@style/Theme.Main">
+		</activity>
+		<activity android:name=".presentation.HelpActivity"
+			android:label="@string/title_help"
+			android:theme="@style/Theme.Main">
+		</activity>
+								
+		<receiver android:name=".application.NetworkStateReceiver" android:enabled="true">
+			<intent-filter>
+				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+			</intent-filter>
+		</receiver>
+
+		<activity
+		        android:name=".presentation.ScreenActivity"
+		        android:label="ScreenActivity"
+		        android:screenOrientation="landscape"
+		        android:configChanges="orientation|keyboardHidden|screenSize"
+		        android:enableVrMode="@string/gvr_vr_mode_component">
+		    <intent-filter>
+		        <action android:name="android.intent.action.MAIN" />
+		        <category android:name="android.intent.category.LAUNCHER" />
+		        <category android:name="com.google.intent.category.CARDBOARD" />
+		    </intent-filter>
+		</activity>
+	</application>
+</manifest>
+

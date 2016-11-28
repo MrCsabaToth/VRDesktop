@@ -1,0 +1,11 @@
+include ':freeRDPCore'
+include ':aFreeRDP'
+
+// Explicitly load all the libraries and samples using their full path.
+include ':libraries:audio'
+include ':libraries:base'
+include ':libraries:common'
+include ':libraries:commonwidget'
+include ':libraries:controller'
+include ':libraries:panowidget'
+include ':libraries:videowidget'

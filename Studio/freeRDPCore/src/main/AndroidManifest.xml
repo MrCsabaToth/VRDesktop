@@ -82,13 +82,18 @@
 			android:windowSoftInputMode="stateHidden">
 		</activity>
 		<activity android:name=".presentation.SessionActivity"
+			android:label="SessionnActivity"
+			android:screenOrientation="landscape"
 			android:theme="@style/Theme.Main"
-			android:configChanges="orientation|keyboardHidden|screenSize|keyboard"
-			android:windowSoftInputMode="adjustResize">
+			android:configChanges="orientation|keyboardHidden|screenSize"
+			android:enableVrMode="@string/gvr_vr_mode_component">
 			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />              
-				<category android:name="android.intent.category.BROWSABLE" />
+				<!--<action android:name="android.intent.action.VIEW" />-->
+				<!--<category android:name="android.intent.category.DEFAULT" />-->
+				<!--<category android:name="android.intent.category.BROWSABLE" />-->
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+				<category android:name="com.google.intent.category.CARDBOARD" />
 				<data android:scheme="freerdp" android:host="*" />
 			</intent-filter>
 		</activity>
@@ -106,19 +111,6 @@
 				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 			</intent-filter>
 		</receiver>
-
-		<activity
-		        android:name=".presentation.ScreenActivity"
-		        android:label="ScreenActivity"
-		        android:screenOrientation="landscape"
-		        android:configChanges="orientation|keyboardHidden|screenSize"
-		        android:enableVrMode="@string/gvr_vr_mode_component">
-		    <intent-filter>
-		        <action android:name="android.intent.action.MAIN" />
-		        <category android:name="android.intent.category.LAUNCHER" />
-		        <category android:name="com.google.intent.category.CARDBOARD" />
-		    </intent-filter>
-		</activity>
 	</application>
 </manifest>
 

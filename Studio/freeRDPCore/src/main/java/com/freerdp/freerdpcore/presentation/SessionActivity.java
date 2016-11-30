@@ -28,12 +28,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -49,12 +45,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.freerdp.freerdpcore.R;
@@ -91,11 +84,8 @@ public class SessionActivity extends GvrActivity implements
 		LibFreeRDP.UIEventListener, GvrView.StereoRenderer {
 	private class UIHandler extends Handler {
 
-		public static final int REFRESH_SESSIONVIEW = 1;
 		public static final int DISPLAY_TOAST = 2;
 		public static final int SEND_MOVE_EVENT = 4;
-		public static final int SHOW_DIALOG = 5;
-		public static final int GRAPHICS_CHANGED = 6;
 
 		UIHandler() {
 			super();
@@ -104,31 +94,15 @@ public class SessionActivity extends GvrActivity implements
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-				case GRAPHICS_CHANGED: {
-					// TODO: refresh GVR
-					//sessionView.onSurfaceChange(session);
-					break;
-				}
-				case REFRESH_SESSIONVIEW: {
-					// TODO: refresh GVR
-					//sessionView.invalidateRegion();
-					break;
-				}
 				case DISPLAY_TOAST: {
-					// TODO: GVR toast
-					//Toast errorToast = Toast.makeText(getApplicationContext(),
-					//		msg.obj.toString(), Toast.LENGTH_LONG);
-					//errorToast.show();
+					Toast errorToast = Toast.makeText(getApplicationContext(),
+							msg.obj.toString(), Toast.LENGTH_LONG);
+					errorToast.show();
 					break;
 				}
 				case SEND_MOVE_EVENT: {
 					LibFreeRDP.sendCursorEvent(session.getInstance(), msg.arg1,
 							msg.arg2, Mouse.getMoveEvent());
-					break;
-				}
-				case SHOW_DIALOG: {
-					// create and show the dialog
-					((Dialog) msg.obj).show();
 					break;
 				}
 			}
@@ -174,23 +148,14 @@ public class SessionActivity extends GvrActivity implements
 
 			// add hostname to history if quick connect was used
 			Bundle bundle = getIntent().getExtras();
-			if (bundle != null
-					&& bundle.containsKey(PARAM_CONNECTION_REFERENCE)) {
-				if (ConnectionReference.isHostnameReference(bundle
-						.getString(PARAM_CONNECTION_REFERENCE))) {
+			if (bundle != null && bundle.containsKey(PARAM_CONNECTION_REFERENCE)) {
+				if (ConnectionReference.isHostnameReference(bundle.getString(PARAM_CONNECTION_REFERENCE))) {
 					assert session.getBookmark().getType() == BookmarkBase.TYPE_MANUAL;
-					String item = session.getBookmark().<ManualBookmark>get()
-							.getHostname();
-					if (!GlobalApp.getQuickConnectHistoryGateway()
-							.historyItemExists(item))
-						GlobalApp.getQuickConnectHistoryGateway()
-								.addHistoryItem(item);
+					String item = session.getBookmark().<ManualBookmark>get().getHostname();
+					if (!GlobalApp.getQuickConnectHistoryGateway().historyItemExists(item))
+						GlobalApp.getQuickConnectHistoryGateway().addHistoryItem(item);
 				}
 			}
-
-//			Intent cardBoardIntent = new Intent(context, ScreenActivity.class);
-//			startActivityForResult(cardBoardIntent, 0);
-//			cardBoardIntent.putExtras(bundle);
 		}
 
 		private void OnConnectionFailure(Context context) {
@@ -200,12 +165,10 @@ public class SessionActivity extends GvrActivity implements
 			uiHandler.removeMessages(UIHandler.SEND_MOVE_EVENT);
 
 			// post error message on UI thread
-			if (!connectCancelledByUser)
-				uiHandler.sendMessage(Message.obtain(
-						null,
-						UIHandler.DISPLAY_TOAST,
-						getResources().getText(
-								R.string.error_connection_failure)));
+			uiHandler.sendMessage(Message.obtain(
+					null,
+					UIHandler.DISPLAY_TOAST,
+					getResources().getText(R.string.error_connection_failure)));
 
 			closeSessionActivity(RESULT_CANCELED);
 		}
@@ -229,7 +192,9 @@ public class SessionActivity extends GvrActivity implements
 
 	private UIHandler uiHandler;
 
-	private boolean connectCancelledByUser = false;
+	private int screen_width;
+	private int screen_height;
+
 	private boolean sessionRunning = false;
 
 	private LibFreeRDPBroadcastReceiver libFreeRDPBroadcastReceiver;
@@ -317,7 +282,7 @@ public class SessionActivity extends GvrActivity implements
 	 * TextureHelper from http://www.learnopengles.com/
 	 * https://github.com/learnopengles/Learn-OpenGLES-Tutorials/
 	 * @param resourceId
-	 * @return reaource handle
+	 * @return resource handle
 	 */
 	public int loadTexture(final int resourceId)
 	{
@@ -330,7 +295,7 @@ public class SessionActivity extends GvrActivity implements
 			options.inScaled = false;	// No pre-scaling
 
 			// Read in the resource
-			final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resourceId, options);
+			final Bitmap bmp = BitmapFactory.decodeResource(getResources(), resourceId, options);
 
 			// Bind to the texture in OpenGL
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
@@ -340,13 +305,49 @@ public class SessionActivity extends GvrActivity implements
 			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST); // GLES20.GL_LINEAR);
 
 			// Load the bitmap into the bound texture.
-			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
 			// TODO: ETC2 compression later: glCompressedTexImage2D
 			// off-line: http://malideveloper.arm.com/resources/tools/mali-gpu-texture-compression-tool/
 			// on-line: https://github.com/AndrewJo/ETCPack
 
 			// Recycle the bitmap, since its data has been loaded into OpenGL.
-			bitmap.recycle();
+			bmp.recycle();
+		}
+
+		if (textureHandle[0] == 0) {
+			throw new RuntimeException("Error loading texture.");
+		}
+
+		return textureHandle[0];
+	}
+
+	/**
+	 *
+	 * @param bmp
+	 * @return
+     */
+	public int updateTexture(final Bitmap bmp)
+	{
+		final int[] textureHandle = new int[1];
+
+		GLES20.glGenTextures(1, textureHandle, 0);
+
+		if (textureHandle[0] != 0) {
+			// Bind to the texture in OpenGL
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+			// Set filtering
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST); // GLES20.GL_LINEAR);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST); // GLES20.GL_LINEAR);
+
+			// Load the bitmap into the bound texture.
+			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+			// TODO: ETC2 compression later: glCompressedTexImage2D
+			// off-line: http://malideveloper.arm.com/resources/tools/mali-gpu-texture-compression-tool/
+			// on-line: https://github.com/AndrewJo/ETCPack
+
+			// Recycle the bitmap, since its data has been loaded into OpenGL.
+//			bmp.recycle();
 		}
 
 		if (textureHandle[0] == 0) {
@@ -561,7 +562,7 @@ public class SessionActivity extends GvrActivity implements
 	 *
 	 * <p>This feeds in data for the screen into the shader. Note that this doesn't feed in data about
 	 * position of the light, so if we rewrite our code to draw the screen first, the lighting might
-	 * look strange.
+	 * look strange.</p>
 	 */
 	public void drawScreen() {
 		GLES20.glUseProgram(screenProgram);
@@ -623,7 +624,6 @@ public class SessionActivity extends GvrActivity implements
 		headView = new float[16];
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-
 		Log.v(TAG, "Session.onCreate");
 
 		// ATTENTION: We use the onGlobalLayout notification to start our
@@ -638,6 +638,9 @@ public class SessionActivity extends GvrActivity implements
 			new OnGlobalLayoutListener() {
 				@Override
 				public void onGlobalLayout() {
+					//screen_width = activityRootView.getWidth();
+					//screen_height = activityRootView.getHeight();
+
 					// start session
 					if (!sessionRunning && getIntent() != null) {
 						processIntent(getIntent());
@@ -757,11 +760,8 @@ public class SessionActivity extends GvrActivity implements
 				.getActiveScreenSettings();
 		Log.v(TAG, "Screen Resolution: " + screenSettings.getResolutionString());
 		// TODO: obtain and use screen resolution from settings
-		//if (screenSettings.isAutomatic()) {
-		//	// large screen device i.e. tablet: simply use screen info
-		//	screenSettings.setHeight(screen_height);
-		//	screenSettings.setWidth(screen_width);
-		//}
+		screenSettings.setHeight(screen_height);
+		screenSettings.setWidth(screen_width);
 
 		connectWithTitle(bookmark.getLabel());
 	}
@@ -788,8 +788,6 @@ public class SessionActivity extends GvrActivity implements
 	private void bindSession() {
 		Log.v(TAG, "bindSession called");
 		session.setUIEventListener(this);
-		// TODO: GVR refresh
-		//sessionView.onSurfaceChange(session);
 	}
 
 	private void closeSessionActivity(int resultCode) {
@@ -825,28 +823,17 @@ public class SessionActivity extends GvrActivity implements
 		if ((settings.getWidth() != width && settings.getWidth() != width + 1)
 				|| settings.getHeight() != height
 				|| settings.getColors() != bpp)
-			uiHandler
-					.sendMessage(Message.obtain(
-							null,
-							UIHandler.DISPLAY_TOAST,
-							getResources().getText(
-									R.string.info_capabilities_changed)));
+			uiHandler.sendMessage(Message.obtain(null, UIHandler.DISPLAY_TOAST,
+					getResources().getText(R.string.info_capabilities_changed)));
 	}
 
 	@Override
 	public void OnGraphicsUpdate(int x, int y, int width, int height) {
-		LibFreeRDP.updateGraphics(session.getInstance(), bitmap, x, y, width,
-				height);
+		LibFreeRDP.updateGraphics(session.getInstance(), bitmap, x, y, width, height);
 
 		// TODO: GVR refresh
+		textureDataHandle = updateTexture(bitmap);
 		//sessionView.addInvalidRegion(new Rect(x, y, x + width, y + height));
-
-		/*
-		 * since sessionView can only be modified from the UI thread any
-		 * modifications to it need to be scheduled
-		 */
-
-		uiHandler.sendEmptyMessage(UIHandler.REFRESH_SESSIONVIEW);
 	}
 
 	@Override
@@ -857,19 +844,13 @@ public class SessionActivity extends GvrActivity implements
 		else
 			bitmap = Bitmap.createBitmap(width, height, Config.RGB_565);
 		session.setSurface(bitmap);
-
-		// TODO: GVR refresh
-		/*
-		 * since sessionView can only be modified from the UI thread any
-		 * modifications to it need to be scheduled
-		 */
-		uiHandler.sendEmptyMessage(UIHandler.GRAPHICS_CHANGED);
 	}
 
 	@Override
 	public boolean OnAuthenticate(StringBuilder username, StringBuilder domain,
 								  StringBuilder password) {
 		// this is where the return code of our dialog will be stored
+		//
 		// Short circuit for now: we'll work with VirtualBox's RDP with NULL auth
 		return true;
 	}
@@ -877,6 +858,7 @@ public class SessionActivity extends GvrActivity implements
 	@Override
 	public boolean OnGatewayAuthenticate(StringBuilder username, StringBuilder domain, StringBuilder password) {
 		// this is where the return code of our dialog will be stored
+		//
 		// Short circuit for now: we'll work with VirtualBox's RDP with NULL auth
 		return true;
 	}
